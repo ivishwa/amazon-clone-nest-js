@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  api:
+    image: amazon-clone-api:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:debug
+    ports:
+      - 3000:3000
+      - 9229:9229
+    networks:
+      - amazon-clone-network
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URL: mongodb:mongodb@localhost
+
+  mongodb:
+    image: mongo:5.0.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongodb
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb
+    networks:
+      - amazon-clone-network
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+networks:
+  amazon-clone-network:
