@@ -13,6 +13,7 @@ import { ProductDocument } from './product.schema';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('product')
+@UseGuards(JwtGuard)
 export class ProductController {
     constructor(private productService: ProductService) { }
 
@@ -26,19 +27,16 @@ export class ProductController {
     }
 
 
-    @UseGuards(JwtGuard)
     @Get()
     findAllProducts(): Promise<ProductDocument[]> {
         return this.productService.findAll();
     }
 
-    @UseGuards(JwtGuard)
     @Get(':id')
     findProduct(@Param('id') id: string): Promise<ProductDocument> {
         return this.productService.find(id);
     }
 
-    @UseGuards(JwtGuard)
     @Patch(':id')
     updateProduct(
         @Param('id') id: string,
@@ -49,7 +47,6 @@ export class ProductController {
         return this.productService.update(id, name, price, description);
     }
 
-    @UseGuards(JwtGuard)
     @Delete(':id')
     deleteProduct(@Param('id') id: string) {
         return this.productService.delete(id);
